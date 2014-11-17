@@ -14,23 +14,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLocationButtonClickListener {
+public class MapsActivity extends FragmentActivity{
 
     private GoogleMap mMap;
 	private GpsHelper mGps;
-	Scan scan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.map);
+        setContentView(R.layout.main);
 	    Log.d("MAP", "onCreate");
 
-	    scan = new Scan();
 	    mGps = new GpsHelper(this);
 
 	    setUpMapIfNeeded();
-	    showScan();
     }
 
     private void setUpMapIfNeeded() {
@@ -45,8 +42,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 	    mMap.getUiSettings().setZoomControlsEnabled(false);
 	    mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
-	    mMap.setOnMyLocationButtonClickListener(this);
-	    centerMapOnMyLocation();
     }
 
 	private void centerMapOnMyLocation() {
@@ -62,24 +57,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMyLoca
 			mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
 		}
 
-	}
-
-	private void showScan(){
-		Log.d("MAP", "ShowScan");
-
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-		fragmentTransaction.add(R.id.scan_container, scan, "scan");
-		fragmentTransaction.commit();
-	}
-
-	@Override
-	public boolean onMyLocationButtonClick() {
-		Log.d("MAP", "Klik w lokalizacje");
-		centerMapOnMyLocation();
-
-		return true;
 	}
 
     @Override
