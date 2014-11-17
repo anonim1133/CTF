@@ -1,34 +1,26 @@
 package me.anonim1133.ctf;
 
-
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.CountDownTimer;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.location.Location;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MapsActivity extends FragmentActivity{
 
-	WifiManager mainWifi;
-	WifiReceiver receiverWifi;
+	private WifiManager mainWifi;
 
     private GoogleMap mMap;
+	private ProgressBar progress;
 
 	//private GpsHelper mGps;
 
@@ -40,21 +32,19 @@ public class MapsActivity extends FragmentActivity{
 
 	    //mGps = new GpsHelper(this);
 
+	    progress = (ProgressBar) findViewById(R.id.progressBar);
+
 	    setUpMapIfNeeded();
     }
 
 	private  void setUpWifi(){
 		mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
-		if(mainWifi.isWifiEnabled()==false){
+		if(!mainWifi.isWifiEnabled()){
 			mainWifi.setWifiEnabled(true);
 		}
 
 		mainWifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		receiverWifi = new WifiReceiver();
-		registerReceiver(receiverWifi, new IntentFilter(
-				WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-
 	}
 
 	private void scanWifi(){
@@ -95,6 +85,21 @@ public class MapsActivity extends FragmentActivity{
 
 		setUpWifi();
 		scanWifi();
+
+		progress.setVisibility(View.VISIBLE);
+
+		CountDownTimer cdt = new CountDownTimer(10000, 1000) {
+
+			public void onTick(long millisUntilFinished) {
+				progress.setProgress((int) ((10000-millisUntilFinished)/1000));
+			}
+
+			public void onFinish() {
+				progress.setProgress(10);
+				Log.d("MAP", mainWifi.getScanResults().toString());
+				progress.setVisibility(View.GONE);
+			}
+		}.start();
 	}
 
     @Override
@@ -125,20 +130,4 @@ public class MapsActivity extends FragmentActivity{
 		setUpMapIfNeeded();
 	}
 
-	class WifiReceiver extends BroadcastReceiver {
-		public void onReceive(Context c, Intent intent) {
-
-			ArrayList<String> connections = new ArrayList<String>();
-			ArrayList<Float> Signal_Strenth = new ArrayList<Float>();
-
-			List<ScanResult> wifiList;
-			wifiList = mainWifi.getScanResults();
-			for (int i = 0; i < wifiList.size(); i++) {
-				connections.add(wifiList.get(i).SSID);
-				Log.d("MAP", "SSID: " + wifiList.get(i).SSID);
-			}
-
-
-		}
-	}
 }
