@@ -66,4 +66,5 @@
         Received an unknown activity request code %1$d in onActivityResult.
     </string>
 	<string name="scan">Scan</string>
+	<string name="txt_btn_scan">Scan</string>
 </resources>
