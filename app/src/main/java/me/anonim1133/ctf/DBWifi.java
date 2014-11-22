@@ -15,9 +15,10 @@ public class DBWifi {
 		this.db = database;
 	}
 
-	public boolean add(String ssid, int signal, int security, double longitude, double latitude){
+	public boolean add(String ssid, String bssid, int signal, int security, double longitude, double latitude){
 		ContentValues values = new ContentValues();
 		values.put("ssid", ssid);
+		values.put("bssid", bssid);
 		values.put("signal", signal);
 		values.put("security", security);
 		values.put("longitude", longitude);

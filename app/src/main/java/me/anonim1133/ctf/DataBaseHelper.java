@@ -11,7 +11,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 	private static final String TAG = "DBHelper";
 	private static String DATABASE_NAME = "zacja.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	private Context c;
 	private SQLiteDatabase db;
@@ -32,7 +32,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase database) {
 		String CREATE_CONQUERED_TABLE = "CREATE TABLE `conquered` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `points` INTEGER DEFAULT '0', `date` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0'); CREATE INDEX `long_index` ON `conquered` (`longitude` ASC);CREATE INDEX `lat_index` ON `conquered` (`latitude` ASC);CREATE INDEX `date_index` ON `conquered` (`date` DESC);";
-		String CREATE_WIFI_TABLE = "CREATE TABLE `wifi` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `ssid` TEXT, `signal` INTEGER DEFAULT '0', `security` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0')";
+		String CREATE_WIFI_TABLE = "CREATE TABLE `wifi` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `ssid` TEXT, `bssid` TEXT, `signal` INTEGER DEFAULT '0', `security` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0')";
 
 		Log.d(TAG, "onCreate");
 		database.execSQL(CREATE_CONQUERED_TABLE);
@@ -40,21 +40,20 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	}
 
 	@Override
-	public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+	public void onUpgrade(SQLiteDatabase database, int i, int i2) {
 		Log.d(TAG, "OnUpgrade");
-    db.execSQL("DROP TABLE IF EXISTS wifi; DROP TABLE IF EXISTS conquered;");
-    onCreate(db);
+		database.execSQL("DROP TABLE IF EXISTS wifi;");
+		database.execSQL("DROP TABLE IF EXISTS conquered;");
+		onCreate(database);
 	}
 
 	public void open() throws SQLException {
 		Log.d(TAG, "open");
-		db = this.getWritableDatabase();
-
-		Log.d(TAG, "PATH: " + db.getPath());
+		this.db = this.getWritableDatabase();
 	}
 
-	public boolean addWifi(String ssid, int signal, int security, double longitude, double latitude){
-		return wifi.add(ssid, signal, security, longitude, latitude);
+	public boolean addWifi(String ssid, String bssid, int signal, int security, double longitude, double latitude){
+		return wifi.add(ssid, bssid, signal, security, longitude, latitude);
 	}
 
 	public void sendWifi() {
