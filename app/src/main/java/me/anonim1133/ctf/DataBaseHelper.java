@@ -3,6 +3,7 @@ package me.anonim1133.ctf;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.sql.SQLException;
 
@@ -15,47 +16,41 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	private Context c;
 	private SQLiteDatabase db;
 	private DBWifi wifi;
+	private DBConquered conquered;
 
-	private static String DATABASE_CREATE = "BEGIN TRANSACTION;\n" +
-			"CREATE TABLE `wifi` (\n" +
-			"\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-			"\t`ssid`\tTEXT,\n" +
-			"\t`signal`\tINTEGER DEFAULT '0',\n" +
-			"\t`security`\tINTEGER DEFAULT '0',\n" +
-			"\t`longitude`\tREAL DEFAULT '0',\n" +
-			"\t`latitude`\tREAL DEFAULT '0'\n" +
-			");\n" +
-			"CREATE TABLE `conquered` (\n" +
-			"\t`id`\tINTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
-			"\t`points`\tINTEGER DEFAULT '0',\n" +
-			"\t`date`\tINTEGER DEFAULT '0',\n" +
-			"\t`longitude`\tREAL DEFAULT '0',\n" +
-			"\t`latitude`\tREAL DEFAULT '0'\n" +
-			");\n" +
-			"CREATE INDEX `long_index` ON `conquered` (`longitude` ASC);\n" +
-			"CREATE INDEX `lat_index` ON `conquered` (`latitude` ASC);\n" +
-			"CREATE INDEX `date_index` ON `conquered` (`date` DESC);\n" +
-			"COMMIT;\n";
-
-	public DataBaseHelper(Context context) {
+	public DataBaseHelper(Context context) throws SQLException {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		this.c = context;
+
+		Log.d(TAG, "konstruktor");
+		this.open();
+
+		wifi = new DBWifi(this.db);
+		conquered = new DBConquered(this.db);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase database) {
-		database.execSQL(DATABASE_CREATE);
+		String CREATE_CONQUERED_TABLE = "CREATE TABLE `conquered` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `points` INTEGER DEFAULT '0', `date` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0'); CREATE INDEX `long_index` ON `conquered` (`longitude` ASC);CREATE INDEX `lat_index` ON `conquered` (`latitude` ASC);CREATE INDEX `date_index` ON `conquered` (`date` DESC);";
+		String CREATE_WIFI_TABLE = "CREATE TABLE `wifi` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `ssid` TEXT, `signal` INTEGER DEFAULT '0', `security` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0')";
+
+		Log.d(TAG, "onCreate");
+		database.execSQL(CREATE_CONQUERED_TABLE);
+		database.execSQL(CREATE_WIFI_TABLE);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i2) {
+		Log.d(TAG, "OnUpgrade");
     db.execSQL("DROP TABLE IF EXISTS wifi; DROP TABLE IF EXISTS conquered;");
     onCreate(db);
 	}
 
 	public void open() throws SQLException {
-		db = getWritableDatabase();
+		Log.d(TAG, "open");
+		db = this.getWritableDatabase();
 
+		Log.d(TAG, "PATH: " + db.getPath());
 	}
 
 	public boolean addWifi(String ssid, int signal, int security, double longitude, double latitude){
@@ -64,6 +59,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 	public void sendWifi() {
 		wifi.send();
+	}
+
+	public  boolean addConquer(int points, String date, double longitude, double latitude){
+		return conquered.add(points, date, longitude, latitude);
 	}
 }
 

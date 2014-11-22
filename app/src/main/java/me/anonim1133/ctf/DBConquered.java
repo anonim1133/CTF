@@ -45,11 +45,6 @@ public class DBConquered {
 			double longitude = cursor.getDouble(4);
 			double latitude = cursor.getDouble(5);
 
-			//Wysłać to na serwer
-
-			//Skasować z lokalnej bazy danych
-			db.delete(TABLE_NAME, "id = ?", new String[] {"id"});
-
 			cursor.moveToNext();
 		}
 		cursor.close();
