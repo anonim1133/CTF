@@ -18,7 +18,7 @@ public class DBWifi {
 	public boolean add(String ssid, String bssid, int signal, int security, double longitude, double latitude){
 		ContentValues values = new ContentValues();
 		values.put("ssid", ssid);
-		values.put("bssid", bssid);
+		values.put("bssid", bssid);// ToDo: Sprawdzać unikalność przed dodaniem
 		values.put("signal", signal);
 		values.put("security", security);
 		values.put("longitude", longitude);
@@ -36,16 +36,17 @@ public class DBWifi {
 	}
 
 	public void send() {
-		Cursor cursor = db.query(TABLE_NAME , new String[] {"id", "ssid", "signal", "security", "longitude", "latitude"}, null, null, null, null, null);
+		Cursor cursor = db.query(TABLE_NAME , new String[] {"id", "ssid", "bssid", "signal", "security", "longitude", "latitude"}, null, null, null, null, null);
 
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			int id = cursor.getInt(0);
 			String ssid = cursor.getString(1);
-			int signal = cursor.getInt(2);
-			int security = cursor.getInt(3);
-			double longitude = cursor.getDouble(4);
-			double latitude = cursor.getDouble(5);
+			String bssid = cursor.getString(2);
+			int signal = cursor.getInt(3);
+			int security = cursor.getInt(4);
+			double longitude = cursor.getDouble(5);
+			double latitude = cursor.getDouble(6);
 
 			//Wysłać to na serwer
 

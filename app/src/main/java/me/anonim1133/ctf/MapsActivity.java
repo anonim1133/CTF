@@ -1,5 +1,7 @@
 package me.anonim1133.ctf;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -14,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -39,6 +42,7 @@ public class MapsActivity extends FragmentActivity{
 	//private GpsHelper mGps;
 
 	float distance_between_last_locations = 100f;
+	long last_scan_time = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,30 +109,38 @@ public class MapsActivity extends FragmentActivity{
 	}
 
 	public void onScan(View view) {
-		//ToDo: Sprawdzić najpierw czy jest gpsFix na mapie.
 		Log.d(MapsActivity.TAG, "onScan");
 
-		setUpWifi();
-		scanWifi();
+		//Czas od ostatniego skanowania
+		long time_difference = System.currentTimeMillis() - last_scan_time;
 
-		progress.setVisibility(View.VISIBLE);
+		//Sprawdzenie, czy miało ono miejsce więcej niż 10s temu
+		if(time_difference > 10000) {//10s
+			last_scan_time = System.currentTimeMillis();
 
-		CountDownTimer cdt = new CountDownTimer(10000, 1000) {
-			public void onTick(long millisUntilFinished) {
-				progress.setProgress((int) ((10000-millisUntilFinished)/1000));
-			}
+			setUpWifi();
+			scanWifi();
 
-			public void onFinish() {
-				progress.setProgress(10);
-				progress.setVisibility(View.GONE);
-				onScanFinish(mainWifi.getScanResults());
-			}
-		}.start();
-		last_location = mMap.getMyLocation();
+			progress.setVisibility(View.VISIBLE);
+
+			CountDownTimer cdt = new CountDownTimer(10000, 1000) {
+				public void onTick(long millisUntilFinished) {
+					progress.setProgress((int) ((10000 - millisUntilFinished) / 1000) + 1);
+				}
+
+				public void onFinish() {
+					progress.setProgress(10);
+					progress.setVisibility(View.GONE);
+					onScanFinish(mainWifi.getScanResults());
+				}
+			}.start();
+			last_location = mMap.getMyLocation();
+		}else{
+			messageBox("Skanowanie już trwa", "Skanowanie można wykonać raz na 10s");
+		}
 	}
 
 	public void onScanFinish(List<ScanResult> wifis){
-		//TODO: Sprawdzić czas ostatniego skanowania, nie może być mniejszy niż 10s
 		Location current_location = mMap.getMyLocation();
 		Float distance = 0.0f;
 		Boolean add = true;
@@ -198,6 +210,16 @@ public class MapsActivity extends FragmentActivity{
 				.radius(distance_between_last_locations)
 				.strokeColor(Color.parseColor("#1E90FF"))
 				.fillColor(Color.parseColor("#331EC2FF")));
+	}
+
+	public void messageBox(String title, String message){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(message)
+				.setTitle(title);
+		//builder.setView(R.layout.dialog_no_fix);
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
 	}
 
     @Override
