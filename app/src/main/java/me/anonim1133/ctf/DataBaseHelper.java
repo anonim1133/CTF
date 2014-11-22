@@ -12,7 +12,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 	private static final String TAG = "DBHelper";
 	private static String DATABASE_NAME = "zacja.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 4;
 
 	private Context c;
 	private SQLiteDatabase db;
@@ -33,7 +33,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase database) {
 		String CREATE_CONQUERED_TABLE = "CREATE TABLE `conquered` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `points` INTEGER DEFAULT '0', `date` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0'); CREATE INDEX `long_index` ON `conquered` (`longitude` ASC);CREATE INDEX `lat_index` ON `conquered` (`latitude` ASC);CREATE INDEX `date_index` ON `conquered` (`date` DESC);";
-		String CREATE_WIFI_TABLE = "CREATE TABLE `wifi` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `ssid` TEXT, `bssid` TEXT, `signal` INTEGER DEFAULT '0', `security` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0')";
+		String CREATE_WIFI_TABLE = "CREATE TABLE `wifi` ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `ssid` TEXT, `bssid` TEXT UNIQUE, `signal` INTEGER DEFAULT '0', `security` INTEGER DEFAULT '0', `longitude` REAL DEFAULT '0', `latitude` REAL DEFAULT '0')";
+		// ToDo: Czy BSSID powinno być unikalne? Może jakaś sieć będzie miała taki sam MAC?
+		// Może lepiej przy dodawaniu sprawdzać czy ssid i bssid są unikalne w parze
 
 		Log.d(TAG, "onCreate");
 		database.execSQL(CREATE_CONQUERED_TABLE);

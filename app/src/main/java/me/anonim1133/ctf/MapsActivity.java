@@ -110,6 +110,7 @@ public class MapsActivity extends FragmentActivity{
 
 	public void onScan(View view) {
 		Log.d(MapsActivity.TAG, "onScan");
+		last_location = mMap.getMyLocation();
 
 		//Czas od ostatniego skanowania
 		long time_difference = System.currentTimeMillis() - last_scan_time;
@@ -134,7 +135,7 @@ public class MapsActivity extends FragmentActivity{
 					onScanFinish(mainWifi.getScanResults());
 				}
 			}.start();
-			last_location = mMap.getMyLocation();
+
 		}else{
 			messageBox("Skanowanie już trwa", "Skanowanie można wykonać raz na 10s");
 		}
