@@ -2,6 +2,8 @@ package me.anonim1133.ctf;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.CountDownTimer;
@@ -15,6 +17,8 @@ import android.widget.ProgressBar;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.sql.SQLException;
@@ -22,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity{
+
+	private static String TAG = "MAP";
 
 	private WifiManager mainWifi;
 	private Location last_location;
@@ -32,7 +38,7 @@ public class MapsActivity extends FragmentActivity{
 
 	//private GpsHelper mGps;
 
-	private static String TAG = "MAP";
+	float distance_between_last_locations = 100f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,14 +156,48 @@ public class MapsActivity extends FragmentActivity{
 
 		//Sprawdzić czy gracz jest wciąż w tym samym miejscu w którym zaczął skanowanie
 		distance = current_location.distanceTo(last_location);
-		if(distance > 100f){
+
+		Log.d(TAG, "Dystans między ostatnią i obecną lokacją: " + distance);
+		if(distance > distance_between_last_locations){
 			add = false;
 		}
 
 		//Sprawdzic czy nie pokrywa się z ostatnimi dodanymi punktami
+		Cursor conquers = db.getLastQonquers(5);
+		conquers.moveToFirst();
+		while (!conquers.isAfterLast()) {
+			Location tmp_location = new Location("tmp");
+			tmp_location.setLongitude(conquers.getDouble(3));
+			tmp_location.setLatitude(conquers.getDouble(4));
 
-		if(add)
-		db.addConquer(100, "01-02-2003", current_location.getLongitude(), current_location.getLatitude());
+			Log.d(TAG, "Dystans między obecną lokacją i jednym z miejsc: " + tmp_location.distanceTo(current_location));
+
+			if(tmp_location.distanceTo(current_location) < distance_between_last_locations){
+				add = false;
+				break;
+			}
+
+			conquers.moveToNext();
+		}
+
+		//ToDo: Jeżeli add == false wyświetlić komunikat o tym.
+
+		if(add) {
+			db.addConquer(100, "01-02-2003", current_location.getLongitude(), current_location.getLatitude());
+
+			drawCircle(new LatLng(current_location.getLatitude(), current_location.getLongitude()));
+
+			//ToDo: koła dodawać do listy i rysować je na oncreate/onresume
+		}else
+			Log.d(TAG, "Lokacje za blisko siebie, lub za daleko");
+	}
+
+	public void drawCircle(LatLng where){
+		mMap.addCircle(new CircleOptions()
+				.center(where)
+				.radius(distance_between_last_locations)
+				.strokeColor(Color.parseColor("#1E90FF"))
+				.fillColor(Color.parseColor("#331EC2FF")));
 	}
 
     @Override

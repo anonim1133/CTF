@@ -33,20 +33,9 @@ public class DBConquered {
 		return false;
 	}
 
-	public void getLast(int limit) {
-		Cursor cursor = db.query(TABLE_NAME , new String[] {"id", "points", "date",  "longitude", "latitude"}, null, null, null, "id DESC", "LIMIT " + limit);
+	public Cursor getLast(int limit) {
+		Cursor cursor = db.query(TABLE_NAME , new String[] {"id", "points", "date",  "longitude", "latitude"}, null, null, null, null, "id DESC", String.valueOf(limit));
 
-		cursor.moveToFirst();
-		while (!cursor.isAfterLast()) {
-			int id = cursor.getInt(0);
-			String ssid = cursor.getString(1);
-			int signal = cursor.getInt(2);
-			int security = cursor.getInt(3);
-			double longitude = cursor.getDouble(4);
-			double latitude = cursor.getDouble(5);
-
-			cursor.moveToNext();
-		}
-		cursor.close();
+		return cursor;
 	}
 }

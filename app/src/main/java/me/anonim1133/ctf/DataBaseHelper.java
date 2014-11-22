@@ -1,6 +1,7 @@
 package me.anonim1133.ctf;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -62,6 +63,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 	public  boolean addConquer(int points, String date, double longitude, double latitude){
 		return conquered.add(points, date, longitude, latitude);
+	}
+
+	public Cursor getLastQonquers(int limit) {
+		return conquered.getLast(limit);
 	}
 }
 
