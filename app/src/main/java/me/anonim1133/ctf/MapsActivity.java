@@ -199,10 +199,23 @@ public class MapsActivity extends FragmentActivity{
 			db.addConquer(100, "01-02-2003", current_location.getLongitude(), current_location.getLatitude());
 
 			drawCircle(new LatLng(current_location.getLatitude(), current_location.getLongitude()));
+		}else{
+			messageBox("Błąd w podboju!", "Już podbiłeś to miejsce, bądź za bardzo oddaliłeś się od miejsca w którym zacząłeś skanowanie");
+		}
+	}
 
-			//ToDo: koła dodawać do listy i rysować je na oncreate/onresume
-		}else
-			Log.d(TAG, "Lokacje za blisko siebie, lub za daleko");
+	public void drawAllCircles(){
+		Cursor conquers = db.getLastQonquers(5);
+		conquers.moveToFirst();
+		while (!conquers.isAfterLast()) {
+			Location tmp_location = new Location("tmp");
+			tmp_location.setLongitude(conquers.getDouble(3));
+			tmp_location.setLatitude(conquers.getDouble(4));
+
+			drawCircle(new LatLng(tmp_location.getLatitude(), tmp_location.getLongitude()));
+
+			conquers.moveToNext();
+		}
 	}
 
 	public void drawCircle(LatLng where){
@@ -248,7 +261,9 @@ public class MapsActivity extends FragmentActivity{
 	protected void onResume() {
 		Log.d(MapsActivity.TAG, "onResume");
 		super.onResume();
+
 		setUpMapIfNeeded();
+		drawAllCircles();
 	}
 
 }
