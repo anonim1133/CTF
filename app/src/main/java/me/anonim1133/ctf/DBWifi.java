@@ -18,7 +18,7 @@ public class DBWifi {
 	public boolean add(String ssid, String bssid, int signal, int security, double longitude, double latitude){
 		ContentValues values = new ContentValues();
 		values.put("ssid", ssid);
-		values.put("bssid", bssid);// ToDo: Sprawdzać unikalność przed dodaniem
+		values.put("bssid", bssid);
 		values.put("signal", signal);
 		values.put("security", security);
 		values.put("longitude", longitude);

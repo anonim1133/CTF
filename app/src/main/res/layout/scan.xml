@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="match_parent"
+              android:weightSum="1"
+              android:id="@+id/scan_layout"
+              android:foregroundGravity="bottom">
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/scan"
+		android:id="@+id/btnscan"
+		android:layout_gravity="center_horizontal|bottom"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:nestedScrollingEnabled="true"/>
+
+	<ProgressBar
+		style="?android:attr/progressBarStyleHorizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/progressBar2"
+		android:layout_above="@+id/btnscan"
+		android:layout_centerHorizontal="true"
+		android:indeterminate="false"/>
+
+</RelativeLayout>
