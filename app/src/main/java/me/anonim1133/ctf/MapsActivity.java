@@ -193,8 +193,6 @@ public class MapsActivity extends FragmentActivity{
 			conquers.moveToNext();
 		}
 
-		//ToDo: Jeżeli add == false wyświetlić komunikat o tym.
-
 		if(add) {
 			db.addConquer(100, "01-02-2003", current_location.getLongitude(), current_location.getLatitude());
 
