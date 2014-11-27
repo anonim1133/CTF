@@ -15,7 +15,7 @@ public class DBConquered {
 		this.db = database;
 	}
 
-	public boolean add(int points, String date,  double longitude, double latitude){
+	public boolean add(int points, long date,  double longitude, double latitude){
 		ContentValues values = new ContentValues();
 		values.put("points", points);
 		values.put("date", date);

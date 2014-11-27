@@ -194,7 +194,8 @@ public class MapsActivity extends FragmentActivity{
 		}
 
 		if(add) {
-			db.addConquer(100, "01-02-2003", current_location.getLongitude(), current_location.getLatitude());
+			long date = System.currentTimeMillis()/1000;
+			db.addConquer(points, date, current_location.getLongitude(), current_location.getLatitude());
 
 			drawCircle(new LatLng(current_location.getLatitude(), current_location.getLongitude()));
 		}else{

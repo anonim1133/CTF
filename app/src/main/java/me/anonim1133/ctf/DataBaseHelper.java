@@ -61,7 +61,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 		wifi.send();
 	}
 
-	public  boolean addConquer(int points, String date, double longitude, double latitude){
+	public  boolean addConquer(int points, long date, double longitude, double latitude){
 		return conquered.add(points, date, longitude, latitude);
 	}
 
